@@ -1,76 +1,57 @@
 import { defineStore } from 'pinia'
-import  axios  from 'axios'
+import axios from 'axios'
 
 const BASE_URL = 'https://65106cba3ce5d181df5d3ecb.mockapi.io'
 
 export const useTodoStore = defineStore('todo', {
   state: () => ({
     list: [],
-    selectedTodo: {},
-    statuses: ['Pending', 'Doing', 'Done']
+    statuses: ['Panding', 'Doing', 'Done'],
+    selectionTodo: {}
   }),
   actions: {
-    async loadTodos () {
+    async loadTodos() {
       try {
         const response = await axios.get(`${BASE_URL}/todos`)
         this.list = response.data
-        console.log('load todo list complete')
-      }
-      catch (error) {
-        console.log('error', error)
+        // console.log(this.list)
+      }catch(error) {
+        console.log('erorr', error)
       }
     },
-    async loadTodo (id) {
+    async loadTodo(id) {
       try {
         const response = await axios.get(`${BASE_URL}/todos/${id}`)
-        this.selectedTodo = response.data
-        console.log('load todo by id complete')
-      }
-      catch (error) {
-        console.log('error', error)
-      }
-    },
-    async addTodo (todoText) {
-      // ชื่อของ Todo
-      const boddyData = {
-        name: todoText,
-        status: 'Pending'
-      }
+        this.selectionTodo = response.data
 
-      try {
-        const response = await axios.post(`${BASE_URL}/todos`, boddyData)
-        this.list.push(response.data)
-        console.log('add todo complete')
-      }
-      catch (error) {
-        console.log('error', error)
+      }catch(error) {
+        console.log('erorr', error)
       }
     },
-    async editTodo (todoData, id) {
-      /*
-      {
-        name: 'test',
-        status: 'Doing'
+    async addTodo(todoName) {
+      try {
+        const todoData = {
+          name: todoName,
+          status: 'Panding'
+        }
+        const response = await axios.post(`${BASE_URL}/todos`, todoData)
+      }catch(error) {
+        console.log('erorr', error)
       }
-      */
+    },
+    async editTodo(todoData, id) {
       try {
         const response = await axios.put(`${BASE_URL}/todos/${id}`, todoData)
-        console.log('edit todo complete')
+      }catch(error) {
+        console.log('erorr', error)
       }
-      catch (error) {
-        console.log('error', error)
-      }
-
     },
-    async removeTodo (id) {
+    async deleteTodo(id) {
       try {
-        const response = await axios.delete(`${BASE_URL}/todos/${id}`)
-        console.log('delete todo complete')
-      }
-      catch (error) {
-        console.log('error', error)
+        const response = await axios.delete(`${BASE_URL}/todos/${id}`,id)
+      }catch(error) {
+        console.log('erorr', error)
       }
     }
   }
-  
 })

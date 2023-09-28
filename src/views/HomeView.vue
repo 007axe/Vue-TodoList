@@ -1,89 +1,151 @@
 <template>
-  <div>
-    
-    <h1>Todo List</h1>
     <div>
-        <input type="text" v-model="todoText">
-        <button @click="addTodo(todoText)">Add</button>
-    </div>
-    <ul >
-        <h2 v-if="isLoading">Loading...</h2>
-        <li v-for="todo in todoStore.list" :key="todo">
-            {{ todo.name }}
-            <select v-model="todo.status" @change="editStatus(todo, todo.id)">
-                <option>Select status</option>
-                <option 
-                v-for="status in todoStore.statuses" 
-                :key="status" 
-                :value="status">
-                    {{ status }}
-                </option>
-            </select>
+        <h1 class="text-3xl font-bold text-center mb-2">Todo List</h1>
 
-            <router-link :to="{ name: 'todo-edit', params: {id: todo.id}}">
-                <button>Edit</button>
-            </router-link>
-            <button @click="deleteTodo(todo.id)">Delete</button>
-        </li>
-    </ul>
-  </div>
+        <div class="flex">
+            <input class="input input-bordered w-full" @keyup.enter="addTodo(todoName)" placeholder="เพิ่ม todo..."
+                type="text" v-model="todoName">
+            <button class="btn btn-accent ml-2" @click="addTodo(todoName)">เพิ่ม</button>
+        </div>
+
+        <Loading v-if="isLoading" />
+
+
+
+        <div v-else>
+            <!-- <div class="tabs mt-4">
+                <a 
+                v-for="item in todoStore.statuses" :key="item" 
+                class="tab tab-bordered"
+                :class="item === selectedStatus ? 'tab tab-active' : 'tab'"
+                @click="changeSelectedStatus(item)">
+                    {{ item }}
+                </a>
+            </div> -->
+            <div class="flex justify-between mt-4">
+                <p class="w-6"></p>
+                <div class="flex justify-between w-1/2">
+                    <p class="w-[80%]">name</p>
+                    <p class="w-[20%] ml-2">status</p>
+                </div>
+
+                <div class="w-[103px]">
+                </div>
+            </div>
+            <div class="flex items-center justify-between mt-2" v-for="item in todoStore.list" :key="item">
+                <div>
+                    <input type="checkbox" :checked="item.status === 'Done'" class="checkbox checkbox-success "
+                        @change="changeStatus($event, item.id)" />
+                </div>
+                <div class="flex justify-between w-1/2">
+                    <div :class="item.status === 'Done' ? 'line-through text-green-500' : ''" class="w-[75%] overflow-hidden text-left">
+                        {{ item.name }}
+                    </div>
+                    <div class="text-center w-[20%] ml-2 rounded-md"
+                    :class="item.status === 'Done' ? 'bg-green-500' : 'bg-yellow-500'"
+                    >
+                        {{ item.status }}
+                    </div>
+                </div>
+
+
+
+                <div>
+                    <router-link :to="{ name: 'edit-view', params: { id: item.id } }">
+                        <button class="btn btn-warning btn-outline"><i class="fa-solid fa-pen-to-square"></i></button>
+                    </router-link>
+                    <button class="btn btn-error btn-outline ml-2" @click="deleteTodo(item.id)"><i
+                            class="fa-solid fa-trash"></i></button>
+                </div>
+            </div>
+        </div>
+
+    </div>
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router'
-import { onMounted, ref } from 'vue'
 import { useTodoStore } from '../stores/todo'
+import { onMounted, ref, computed } from 'vue'
+import { RouterLink } from 'vue-router'
+
+import Loading from '../components/Loading.vue'
 
 const todoStore = useTodoStore()
-const todoText = ref('')
 const isLoading = ref(false)
+const todoName = ref('')
+const selectedStatus = ref('')
 
-onMounted(async() => {
+const filterTodoList = computed(() => {
+    return todoStore.list.filter(item => item.status === selectedStatus.value)
+})
+
+
+onMounted(async () => {
     isLoading.value = true
     await todoStore.loadTodos()
     isLoading.value = false
-    // console.log(todoStore.list)
 })
 
-const addTodo = async (todoText) => {
+const addTodo = async (todoName) => {
     try {
         isLoading.value = true
-        await todoStore.addTodo(todoText)
-        isLoading.value = false
+        await todoStore.addTodo(todoName)
+        todoStore.loadTodos()
+
+    }
+    catch (error) {
+        console.log('error', error)
+    }
+    isLoading.value = false
+}
+
+const editTodo = async (todo, todoId) => {
+    try {
+        await todoStore.editTodo(todo, todoId)
+        todoStore.loadTodos()
+
     }
     catch (error) {
         console.log('error', error)
     }
 }
 
-const editStatus = async (todoData, todoId) => {
+const deleteTodo = async (id) => {
     try {
         isLoading.value = true
-        const updateData = {
-            name: todoData.name,
-            status: todoData.status
-        }
-        await todoStore.editTodo(updateData, todoId)
+        await todoStore.deleteTodo(id)
+        todoStore.loadTodos()
+        console.log('ลบสำเร็จ')
+
     }
     catch (error) {
         console.log('error', error)
-        isLoading.value = false
     }
+    isLoading.value = false
 }
-const deleteTodo = async (todoId) => {
+const changeStatus = async (event, id) => {
     try {
         isLoading.value = true
-        await todoStore.removeTodo(todoId)
+        if (event.target.checked) {
+            await todoStore.editTodo({ status: 'Done' }, id)
+
+        } else {
+            await todoStore.editTodo({ status: 'Doing' }, id)
+        }
         await todoStore.loadTodos()
-        isLoading.value = false
+
+
     }
     catch (error) {
         console.log('error', error)
     }
+    isLoading.value = false
+}
+
+const changeSelectedStatus = async (newStatus) => {
+    selectedStatus.value = newStatus
 }
 
 </script>
 
-<style>
-
-</style>
+<style></style>

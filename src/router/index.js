@@ -7,12 +7,12 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      name: 'todo-list',
+      name: 'todo-view',
       component: HomeView
     },
     {
       path: '/todo/:id/edit',
-      name: 'todo-edit',
+      name: 'edit-view',
       component: EditView
     },
 
