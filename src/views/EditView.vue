@@ -5,7 +5,7 @@
       <h1 class="text-3xl font-bold mb-2 ml-auto mr-auto">Edit</h1>
     </div>
     <Loading v-if="isLoading" />
-    <div v-else class="text-lg">
+    <div v-else class="text-sm sm:text-lg ">
         <h2 class="text-xl">id {{ todoId }}</h2>
       <div>
         <p class="my-2">ชื่อ</p>
@@ -13,7 +13,7 @@
       </div>
       <div>
         <p class="my-2">สถานะ</p>
-        <select class="select select-bordered w-full mb-2"  v-model="todoStore.selectionTodo.status">
+        <select class="select select-bordered  w-full mb-2"  v-model="todoStore.selectionTodo.status">
           <option v-for="status in todoStore.statuses" :key="status" :value="status">
             {{ status }}
           </option>

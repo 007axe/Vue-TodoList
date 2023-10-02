@@ -22,26 +22,17 @@
                     {{ item }}
                 </a>
             </div> -->
-            <div class="flex justify-between mt-4">
-                <p class="w-6"></p>
-                <div class="flex justify-between w-1/2">
-                    <p class="w-[80%]">name</p>
-                    <p class="w-[20%] ml-2">status</p>
-                </div>
 
-                <div class="w-[103px]">
-                </div>
-            </div>
             <div class="flex items-center justify-between mt-2" v-for="item in todoStore.list" :key="item">
-                <div>
-                    <input type="checkbox" :checked="item.status === 'Done'" class="checkbox checkbox-success "
+                <div class="flex">
+                    <input type="checkbox" :checked="item.status === 'Done'" class="checkbox checkbox-success w-4 md:w-6 h-4 md:h-6"
                         @change="changeStatus($event, item.id)" />
                 </div>
-                <div class="flex justify-between w-1/2">
-                    <div :class="item.status === 'Done' ? 'line-through text-green-500' : ''" class="w-[75%] overflow-hidden text-left">
+                <div class="flex text-sm sm:text-lg  w-[70%]">
+                    <div :class="item.status === 'Done' ? 'line-through text-green-500' : ''" class="flex-auto w-[75%] overflow-hidden text-left">
                         {{ item.name }}
                     </div>
-                    <div class="text-center w-[20%] ml-2 rounded-md"
+                    <div class="flex-auto w-[20%] text-center  rounded-md"
                     :class="item.status === 'Done' ? 'bg-green-500' : 'bg-yellow-500'"
                     >
                         {{ item.status }}
@@ -52,9 +43,9 @@
 
                 <div>
                     <router-link :to="{ name: 'edit-view', params: { id: item.id } }">
-                        <button class="btn btn-warning btn-outline"><i class="fa-solid fa-pen-to-square"></i></button>
+                        <button class="md:btn btn-warning btn-outline"><i class="fa-solid fa-pen-to-square"></i></button>
                     </router-link>
-                    <button class="btn btn-error btn-outline ml-2" @click="deleteTodo(item.id)"><i
+                    <button class="md:btn btn-error btn-outline ml-2" @click="deleteTodo(item.id)"><i
                             class="fa-solid fa-trash"></i></button>
                 </div>
             </div>
